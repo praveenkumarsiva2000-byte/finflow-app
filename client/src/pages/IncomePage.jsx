@@ -11,7 +11,8 @@ function AddIncomeModal({ onAdd, onClose }) {
 
   const handleSubmit = () => {
     if (!form.amount || Number(form.amount) <= 0) { setError("Enter a valid amount."); return; }
-    onAdd(form); onClose();
+    // include `category` so server and UI use the selected income source for display
+    onAdd({ ...form, category: form.source }); onClose();
   };
 
   return (
