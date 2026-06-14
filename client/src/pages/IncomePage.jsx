@@ -1,6 +1,6 @@
 import { useState } from "react";
 import * as Icons from "lucide-react";
-import { Plus, Trash2, TrendingUp, IndianRupee } from "lucide-react";
+import { Plus, Trash2, TrendingUp, IndianRupee, Edit3 } from "lucide-react";
 import { INCOME_CATEGORIES, getIncomeCategoryById } from "../utils/categories";
 import { formatCurrency, formatDate } from "../utils/helpers";
 import { format, startOfMonth, endOfMonth, isWithinInterval, parseISO } from "date-fns";
