@@ -5,7 +5,14 @@ import { CATEGORIES } from "../utils/categories";
 import { format } from "date-fns";
 
 const today = format(new Date(), "yyyy-MM-dd");
-const newEntry = () => ({ id: Date.now() + Math.random(), amount: "", category: "food", date: today, note: "", isRecurring: false });
+const FREQUENCIES = [
+  { id: "daily", label: "Daily" },
+  { id: "weekly", label: "Weekly" },
+  { id: "monthly", label: "Monthly" },
+  { id: "yearly", label: "Yearly" },
+];
+
+const newEntry = () => ({ id: Date.now() + Math.random(), amount: "", category: "food", date: today, note: "", isRecurring: false, frequency: "monthly" });
 
 function EntryRow({ entry, idx, total, onChange, onRemove, onDuplicate }) {
   const [open, setOpen] = useState(idx === 0);
@@ -115,18 +122,38 @@ function EntryRow({ entry, idx, total, onChange, onRemove, onDuplicate }) {
           </div>
 
           {/* Recurring */}
-          <div className="flex items-center gap-3">
-            <button
-              type="button"
-              onClick={() => onChange({ isRecurring: !entry.isRecurring })}
-              className={`w-9 h-5 rounded-full transition-all duration-200 relative shrink-0 ${entry.isRecurring ? "bg-electric-500" : "bg-white/10"}`}
-            >
-              <span className={`absolute top-0.5 w-4 h-4 bg-white rounded-full shadow transition-all duration-200 ${entry.isRecurring ? "left-4.5" : "left-0.5"}`} />
-            </button>
-            <div className="flex items-center gap-1.5">
-              <RefreshCw size={12} className={entry.isRecurring ? "text-electric-400" : "text-white/30"} />
-              <span className="text-xs font-display font-semibold text-white/50">Recurring</span>
+          <div className="space-y-2.5">
+            <div className="flex items-center gap-3">
+              <button
+                type="button"
+                onClick={() => onChange({ isRecurring: !entry.isRecurring })}
+                className={`w-9 h-5 rounded-full transition-all duration-200 relative shrink-0 ${entry.isRecurring ? "bg-electric-500" : "bg-white/10"}`}
+              >
+                <span className={`absolute top-0.5 w-4 h-4 bg-white rounded-full shadow transition-all duration-200 ${entry.isRecurring ? "left-4.5" : "left-0.5"}`} />
+              </button>
+              <div className="flex items-center gap-1.5">
+                <RefreshCw size={12} className={entry.isRecurring ? "text-electric-400" : "text-white/30"} />
+                <span className="text-xs font-display font-semibold text-white/50">Recurring</span>
+              </div>
             </div>
+
+            {entry.isRecurring && (
+              <div className="pl-12 animate-fade-in">
+                <label className="text-[10px] font-display font-semibold text-white/40 uppercase tracking-wider mb-1 block">Repeats</label>
+                <div className="grid grid-cols-4 gap-1.5">
+                  {FREQUENCIES.map((f) => (
+                    <button
+                      key={f.id} type="button"
+                      onClick={() => onChange({ frequency: f.id })}
+                      className={`py-1.5 rounded-lg border text-[11px] font-display font-semibold transition-all
+                        ${entry.frequency === f.id ? "bg-electric-500/15 border-electric-500/40 text-electric-400" : "bg-white/3 border-navy-border text-white/40 hover:bg-white/6"}`}
+                    >
+                      {f.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         </div>
       )}
@@ -178,9 +205,9 @@ export default function AddExpenseModal({ onAdd, onClose }) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-start md:items-center justify-center p-4 pt-20 md:pt-0">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-black/75 backdrop-blur-sm animate-fade-in" onClick={onClose} />
-      <div className="relative w-full max-w-lg glass-card animate-pop flex flex-col max-h-[90vh] md:mt-0">
+      <div className="relative w-full max-w-lg glass-card animate-pop flex flex-col max-h-[85vh]">
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-5 border-b border-navy-border shrink-0">
           <div>

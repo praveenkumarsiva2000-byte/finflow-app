@@ -8,6 +8,9 @@ const expenseSchema = new mongoose.Schema(
     date: { type: String, required: [true, "Date is required"] },
     note: { type: String, default: "", trim: true },
     isRecurring: { type: Boolean, default: false },
+    frequency: { type: String, enum: ["daily", "weekly", "monthly", "yearly"], default: "monthly" },
+    recurringSourceId: { type: mongoose.Schema.Types.ObjectId, ref: "Expense", default: null },
+    recurringPeriodKey: { type: String, default: null },
   },
   { timestamps: true }
 );

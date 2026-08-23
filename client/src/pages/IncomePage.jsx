@@ -16,9 +16,9 @@ function AddIncomeModal({ onAdd, onClose }) {
   };
 
   return (
-    <div className="fixed inset-0 z-[9999] flex items-start md:items-center justify-center p-4 pt-20 md:pt-0">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-black/75 backdrop-blur-sm animate-fade-in" onClick={onClose} />
-      <div className="relative w-full max-w-md glass-card p-6 animate-pop z-50">
+      <div className="relative w-full max-w-md glass-card p-6 animate-pop max-h-[85vh] overflow-y-auto">
         <div className="flex items-center justify-between mb-5">
           <h2 className="text-xl font-display font-bold text-white">Add Income</h2>
           <button onClick={onClose} className="w-8 h-8 flex items-center justify-center rounded-lg bg-white/5 text-white/50"><Icons.X size={16} /></button>

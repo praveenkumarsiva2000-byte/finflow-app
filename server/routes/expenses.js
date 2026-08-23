@@ -28,25 +28,76 @@ router.get("/", async (req, res) => {
   }
 });
 
+// ── Recurring helpers ───────────────────────────────────────────────────────
+// Period key identifies "has this template already fired in the current cycle".
+function getPeriodKey(frequency, now) {
+  const y = now.getFullYear();
+  const m = String(now.getMonth() + 1).padStart(2, "0");
+  const d = String(now.getDate()).padStart(2, "0");
+  switch (frequency) {
+    case "daily":
+      return `${y}-${m}-${d}`;
+    case "weekly": {
+      const oneJan = new Date(y, 0, 1);
+      const dayOfYear = Math.floor((now - oneJan) / 86400000) + 1;
+      const week = Math.ceil((dayOfYear + oneJan.getDay()) / 7);
+      return `${y}-W${week}`;
+    }
+    case "yearly":
+      return `${y}`;
+    case "monthly":
+    default:
+      return `${y}-${m}`;
+  }
+}
+
+// Due date for the generated instance, anchored to the template's original date where it makes sense.
+function getDueDate(frequency, templateDate, now) {
+  const y = now.getFullYear();
+  const m = String(now.getMonth() + 1).padStart(2, "0");
+  const d = String(now.getDate()).padStart(2, "0");
+  const templateDay = Math.min(new Date(templateDate).getDate(), 28);
+  switch (frequency) {
+    case "daily":
+    case "weekly":
+      return `${y}-${m}-${d}`;
+    case "yearly": {
+      const templateMonth = String(new Date(templateDate).getMonth() + 1).padStart(2, "0");
+      return `${y}-${templateMonth}-${String(templateDay).padStart(2, "0")}`;
+    }
+    case "monthly":
+    default:
+      return `${y}-${m}-${String(templateDay).padStart(2, "0")}`;
+  }
+}
+
 // ── POST /api/expenses/generate-recurring ─────────────────────────────────
-// Creates expense entries for recurring templates for the current month if not already created
+// Creates expense entries for recurring templates for the current period (daily/weekly/monthly/yearly) if not already created
 router.post("/generate-recurring", async (req, res) => {
   try {
-    const recurringTemplates = await Expense.find({ userId: req.userId, isRecurring: true });
+    const recurringTemplates = await Expense.find({ userId: req.userId, isRecurring: true, recurringSourceId: null });
     const now = new Date();
-    const monthKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
-
     const created = [];
 
     for (const t of recurringTemplates) {
-      // check if an expense from this template exists for this month
-      const exists = await Expense.findOne({ userId: req.userId, category: t.category, isRecurring: false, date: { $regex: `^${monthKey}` } });
+      const frequency = t.frequency || "monthly";
+      const periodKey = getPeriodKey(frequency, now);
+
+      // check if this template already generated an instance for the current period
+      const exists = await Expense.findOne({ userId: req.userId, recurringSourceId: t._id, recurringPeriodKey: periodKey });
       if (exists) continue;
 
-      // create a copy for this month with date set to same day if possible, else first of month
-      const day = Math.min(new Date(t.date).getDate(), 28);
-      const dateStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
-      const exp = await Expense.create({ userId: req.userId, amount: t.amount, category: t.category, date: dateStr, note: t.note || "", isRecurring: false });
+      const dateStr = getDueDate(frequency, t.date, now);
+      const exp = await Expense.create({
+        userId: req.userId,
+        amount: t.amount,
+        category: t.category,
+        date: dateStr,
+        note: t.note || "",
+        isRecurring: false,
+        recurringSourceId: t._id,
+        recurringPeriodKey: periodKey,
+      });
       created.push(exp);
     }
 
@@ -70,8 +121,11 @@ router.post(
     if (!errors.isEmpty()) return res.status(400).json({ error: errors.array()[0].msg });
 
     try {
-      const { amount, category, date, note, isRecurring } = req.body;
-      const expense = await Expense.create({ userId: req.userId, amount, category, date, note, isRecurring });
+      const { amount, category, date, note, isRecurring, frequency } = req.body;
+      const expense = await Expense.create({
+        userId: req.userId, amount, category, date, note, isRecurring,
+        frequency: isRecurring ? (frequency || "monthly") : undefined,
+      });
       res.status(201).json(expense);
     } catch (err) {
       res.status(500).json({ error: "Failed to add expense." });

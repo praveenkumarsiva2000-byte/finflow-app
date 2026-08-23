@@ -32,6 +32,22 @@ npm run dev
 
 ---
 
+## Demo Credentials
+
+To try the app without signing up, seed a demo account (run once, after `MONGODB_URI` is configured):
+```bash
+cd server
+npm run seed
+```
+
+Then log in with:
+| Field    | Value              |
+|----------|--------------------|
+| Email    | `demo@finflow.app` |
+| Password | `Demo@1234`        |
+
+---
+
 ## Deploy
 - **Backend** → [Render](https://render.com) — connect `server/` folder
 - **Frontend** → [Netlify](https://netlify.com) — connect `client/` folder, build command: `npm run build`, publish dir: `build`

@@ -66,6 +66,15 @@ npm start
 
 ---
 
+## Demo Credentials
+Seed a demo account once `MONGODB_URI` is set (`npm run seed` from `finflow-server/`), then log in / test the Postman collection with:
+| Field    | Value              |
+|----------|--------------------|
+| Email    | `demo@finflow.app` |
+| Password | `Demo@1234`        |
+
+---
+
 ## API Endpoints
 
 ### Auth

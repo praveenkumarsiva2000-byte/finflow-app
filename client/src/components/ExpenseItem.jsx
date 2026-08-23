@@ -30,7 +30,12 @@ export default function ExpenseItem({ expense, onDelete, updateExpense }) {
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2">
             <p className="text-sm font-semibold text-white truncate">{expense.note || cat.label}</p>
-            {expense.isRecurring && <RefreshCw size={11} className="text-electric-400 shrink-0" title="Recurring" />}
+            {expense.isRecurring && (
+              <span className="flex items-center gap-1 shrink-0 text-electric-400" title={`Recurring · ${expense.frequency || "monthly"}`}>
+                <RefreshCw size={11} />
+                <span className="text-[10px] font-display font-semibold capitalize hidden sm:inline">{expense.frequency || "monthly"}</span>
+              </span>
+            )}
             <span className={`tag-pill hidden sm:inline-flex ${cat.bg} ${cat.text} border ${cat.border}`}>{cat.label.split(" ")[0]}</span>
           </div>
           <p className="text-xs text-white/35 mt-0.5 font-body">{expense.note ? cat.label : ""}</p>
