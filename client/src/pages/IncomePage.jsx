@@ -87,6 +87,7 @@ export default function IncomePage({ incomes, addIncome, deleteIncome, updateInc
   incomes.forEach((i) => { byCategory[i.category] = (byCategory[i.category] || 0) + Number(i.amount); });
 
   return (
+    <>
     <div className="space-y-5 animate-fade-in">
       <div className="flex items-center justify-between">
         <div>
@@ -160,8 +161,9 @@ export default function IncomePage({ incomes, addIncome, deleteIncome, updateInc
         </div>
       )}
 
-      {showModal && <AddIncomeModal onAdd={addIncome} onClose={() => setShowModal(false)} />}
     </div>
+    {showModal && <AddIncomeModal onAdd={addIncome} onClose={() => setShowModal(false)} />}
+    </>
   );
 }
 

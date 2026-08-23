@@ -208,6 +208,7 @@ export default function GoalsPage({ goals, addGoal, updateGoalProgress, deleteGo
   const totalSaved = goals.reduce((s, g) => s + g.saved, 0);
 
   return (
+    <>
     <div className="space-y-5 animate-fade-in">
       {/* Header */}
       <div className="flex items-center justify-between">
@@ -349,9 +350,10 @@ export default function GoalsPage({ goals, addGoal, updateGoalProgress, deleteGo
         </div>
       )}
 
-      {showAdd && <AddGoalModal onAdd={addGoal} onClose={() => setShowAdd(false)} />}
-      {editing && <EditProgressModal goal={editing} onUpdate={updateGoalProgress} onClose={() => setEditing(null)} />}
-      {editingFull && <AddGoalModal existing={editingFull} onAdd={(id, data) => { updateGoal(id, data); setEditingFull(null); }} onClose={() => setEditingFull(null)} />}
     </div>
+    {showAdd && <AddGoalModal onAdd={addGoal} onClose={() => setShowAdd(false)} />}
+    {editing && <EditProgressModal goal={editing} onUpdate={updateGoalProgress} onClose={() => setEditing(null)} />}
+    {editingFull && <AddGoalModal existing={editingFull} onAdd={(id, data) => { updateGoal(id, data); setEditingFull(null); }} onClose={() => setEditingFull(null)} />}
+    </>
   );
 }
