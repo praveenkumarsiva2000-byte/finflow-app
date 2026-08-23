@@ -109,9 +109,6 @@ function MainApp() {
           </nav>
 
           <div className="flex items-center gap-2">
-            <button onClick={() => setShowModal(true)} className="btn-primary flex items-center gap-1.5">
-              <Plus size={15} /><span className="hidden sm:inline">Add Expense</span><span className="sm:hidden">Add</span>
-            </button>
             {/* User avatar + logout */}
             <div className="relative">
               <button
@@ -211,6 +208,9 @@ function MainApp() {
                 <h2 className="section-title">All Expenses</h2>
                 <p className="section-sub">{filtered.length} of {expenses.length} entries</p>
               </div>
+              <button onClick={() => setShowModal(true)} className="btn-primary flex items-center gap-2">
+                <Plus size={16} />Add Expense
+              </button>
             </div>
             <FilterBar filters={filters} onChange={setFilters} />
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
@@ -242,12 +242,6 @@ function MainApp() {
               <span className="text-[10px] font-display font-semibold">{label}</span>
             </button>
           ))}
-          <button onClick={() => setShowModal(true)} className="flex flex-col items-center gap-1 py-1.5 px-3">
-            <div className="w-10 h-10 bg-gradient-to-br from-electric-500 to-neon rounded-xl flex items-center justify-center -mt-6 shadow-electric">
-              <Plus size={20} className="text-navy" />
-            </div>
-            <span className="text-[10px] font-display font-semibold text-white/40 mt-0.5">Add</span>
-          </button>
         </div>
       </nav>
 
