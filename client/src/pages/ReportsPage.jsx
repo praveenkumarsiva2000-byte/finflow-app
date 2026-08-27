@@ -87,7 +87,7 @@ export default function ReportsPage({ expenses, incomes = [], budgets = [] }) {
     doc.setTextColor(255, 255, 255);
     doc.setFontSize(16);
     doc.setFont("helvetica", "bold");
-    doc.text("FinFlow — Financial Report", 14, 14);
+    doc.text("Cashlyne — Financial Report", 14, 14);
     doc.setFontSize(8);
     doc.setFont("helvetica", "normal");
     doc.text(`Generated: ${generated}`, pageW - 14, 14, { align: "right" });
@@ -223,10 +223,10 @@ export default function ReportsPage({ expenses, incomes = [], budgets = [] }) {
       doc.setPage(i);
       doc.setFontSize(7);
       doc.setTextColor(160, 160, 160);
-      doc.text(`FinFlow v1.0 · Personal Finance Manager · Page ${i} of ${pageCount}`, pageW / 2, doc.internal.pageSize.getHeight() - 8, { align: "center" });
+      doc.text(`Cashlyne v1.0 · Personal Finance Manager · Page ${i} of ${pageCount}`, pageW / 2, doc.internal.pageSize.getHeight() - 8, { align: "center" });
     }
 
-    doc.save(`finflow-report-${format(new Date(), "yyyy-MM-dd")}.pdf`);
+    doc.save(`cashlyne-report-${format(new Date(), "yyyy-MM-dd")}.pdf`);
   };
 
   return (

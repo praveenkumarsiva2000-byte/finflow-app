@@ -1,4 +1,4 @@
-# FinFlow — Personal Finance Manager (MERN Stack)
+# Cashlyne — Personal Finance Manager (MERN Stack)
 
 ## Tech Stack
 | Layer | Technology |
@@ -14,7 +14,7 @@
 
 ## Project Structure
 ```
-finflow/           ← React frontend
+client/            ← React frontend
   src/
     context/       ← AuthContext (JWT session)
     hooks/         ← useExpenses (API calls)
@@ -22,7 +22,7 @@ finflow/           ← React frontend
     pages/         ← Dashboard, Expenses, Income, Budget, Goals, Reports, Profile
     components/    ← Shared UI components
 
-finflow-server/    ← Express + MongoDB backend
+server/            ← Express + MongoDB backend
   models/          ← User, Expense, Income, Budget, Goal
   routes/          ← auth, expenses, incomes, budgets, goals
   middleware/      ← JWT auth middleware
@@ -36,7 +36,7 @@ finflow-server/    ← Express + MongoDB backend
 
 ### 1. Backend
 ```bash
-cd finflow-server
+cd server
 
 # Install dependencies
 npm install
@@ -53,7 +53,7 @@ npm run dev
 
 ### 2. Frontend
 ```bash
-cd finflow
+cd client
 
 # Install dependencies
 npm install
@@ -67,10 +67,10 @@ npm start
 ---
 
 ## Demo Credentials
-Seed a demo account once `MONGODB_URI` is set (`npm run seed` from `finflow-server/`), then log in / test the Postman collection with:
+Seed a demo account once `MONGODB_URI` is set (`npm run seed` from `server/`), then log in / test the Postman collection with:
 | Field    | Value              |
 |----------|--------------------|
-| Email    | `demo@finflow.app` |
+| Email    | `demo@cashlyne.app` |
 | Password | `Demo@1234`        |
 
 ---
@@ -121,7 +121,7 @@ Seed a demo account once `MONGODB_URI` is set (`npm run seed` from `finflow-serv
 ## Deployment
 
 ### Backend → Render
-1. Push `finflow-server/` to GitHub
+1. Push `server/` to GitHub
 2. Go to render.com → New Web Service
 3. Connect repo, set:
    - Build command: `npm install`
@@ -129,7 +129,7 @@ Seed a demo account once `MONGODB_URI` is set (`npm run seed` from `finflow-serv
 4. Add environment variables (MONGODB_URI, JWT_SECRET, CLIENT_URL)
 
 ### Frontend → Netlify
-1. In `finflow/.env`, change `REACT_APP_API_URL` to your Render backend URL
+1. In `client/.env`, change `REACT_APP_API_URL` to your Render backend URL
 2. Run `npm run build`
 3. Drag `build/` folder to Netlify OR connect GitHub repo with:
    - Build command: `npm run build`
@@ -138,5 +138,5 @@ Seed a demo account once `MONGODB_URI` is set (`npm run seed` from `finflow-serv
 ---
 
 ## Testing with Postman
-Import `FinFlow.postman_collection.json` into Postman.
+Import `Cashlyne.postman_collection.json` into Postman.
 The Login request auto-saves the token — all protected routes use `{{token}}` automatically.

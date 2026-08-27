@@ -160,7 +160,7 @@ export default function ProfilePage({ profile, updateProfile, expenses, incomes,
         </button>
       </div>
 
-      <p className="text-center text-xs text-white/20 font-body pb-2">FinFlow v1.0 · Personal Finance Manager · © 2026</p>
+      <p className="text-center text-xs text-white/20 font-body pb-2">Cashlyne v1.0 · Personal Finance Manager · © 2026</p>
     </div>
   );
 }

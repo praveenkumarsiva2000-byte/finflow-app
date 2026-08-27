@@ -1,8 +1,8 @@
-# FinFlow — MERN Stack Personal Finance Manager
+# Cashlyne — MERN Stack Personal Finance Manager
 
 ## Folder Structure
 ```
-finflow/
+cashlyne-app/
 ├── client/        ← React frontend (TailwindCSS, Recharts, jsPDF)
 ├── server/        ← Node.js + Express + MongoDB backend
 └── package.json   ← Root scripts to run both together
@@ -43,7 +43,7 @@ npm run seed
 Then log in with:
 | Field    | Value              |
 |----------|--------------------|
-| Email    | `demo@finflow.app` |
+| Email    | `demo@cashlyne.app` |
 | Password | `Demo@1234`        |
 
 ---

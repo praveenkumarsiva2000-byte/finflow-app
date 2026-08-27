@@ -6,7 +6,7 @@ const AuthContext = createContext(null);
 export function AuthProvider({ children }) {
   const [currentUser, setCurrentUser] = useState(() => {
     try {
-      const raw = localStorage.getItem("finflow_user");
+      const raw = localStorage.getItem("cashlyne_user");
       return raw ? JSON.parse(raw) : null;
     } catch { return null; }
   });
@@ -23,8 +23,8 @@ export function AuthProvider({ children }) {
   const login = useCallback(async ({ email, password }) => {
     try {
       const data = await api.login({ email, password });
-      localStorage.setItem("finflow_token", data.token);
-      localStorage.setItem("finflow_user", JSON.stringify(data.user));
+      localStorage.setItem("cashlyne_token", data.token);
+      localStorage.setItem("cashlyne_user", JSON.stringify(data.user));
       setCurrentUser(data.user);
       return { success: true };
     } catch (err) {
@@ -33,8 +33,8 @@ export function AuthProvider({ children }) {
   }, []);
 
   const logout = useCallback(() => {
-    localStorage.removeItem("finflow_token");
-    localStorage.removeItem("finflow_user");
+    localStorage.removeItem("cashlyne_token");
+    localStorage.removeItem("cashlyne_user");
     setCurrentUser(null);
   }, []);
 

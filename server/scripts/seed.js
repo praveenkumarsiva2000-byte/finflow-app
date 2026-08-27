@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 const connectDB = require("../config/db");
 const User = require("../models/User");
 
-const DEMO_EMAIL = "demo@finflow.app";
+const DEMO_EMAIL = "demo@cashlyne.app";
 const DEMO_PASSWORD = "Demo@1234";
 
 async function seed() {

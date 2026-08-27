@@ -83,7 +83,7 @@ export default function BudgetPage({ budgets, addBudget, deleteBudget, expenses 
       <div className="flex items-center justify-between">
         <div>
           <h2 className="section-title">Budgets</h2>
-          <p className="section-sub">Track your spending limits — {format(new Date(), "MMMM yyyy")}</p>
+          <p className="section-sub">Track your spending limits {format(new Date(), "MMMM yyyy")}</p>
         </div>
         <button onClick={() => setShowModal(true)} className="btn-primary flex items-center gap-2">
           <Plus size={16} />Set Budget

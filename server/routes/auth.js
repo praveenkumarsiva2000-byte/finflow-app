@@ -99,7 +99,7 @@ router.post(
       user.resetOtpAttempts = 0;
       await user.save();
 
-      await sendMail({ to: user.email, subject: "Your FinFlow password reset code", html: templates.otp(otp) });
+      await sendMail({ to: user.email, subject: "Your Cashlyne password reset code", html: templates.otp(otp) });
       res.json(generic);
     } catch (err) {
       res.status(500).json({ error: "Server error during password reset request." });

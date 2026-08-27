@@ -34,7 +34,7 @@ app.use("/api/goals", require("./routes/goals"));
 
 // ── Health check ───────────────────────────────────────────────────────────
 app.get("/api/health", (req, res) => {
-  res.json({ status: "OK", message: "FinFlow API is running", timestamp: new Date().toISOString() });
+  res.json({ status: "OK", message: "Cashlyne API is running", timestamp: new Date().toISOString() });
 });
 
 // ── 404 handler ────────────────────────────────────────────────────────────
@@ -49,6 +49,6 @@ app.use((err, req, res, next) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`🚀 FinFlow API running on http://localhost:${PORT}`);
+  console.log(`🚀 Cashlyne API running on http://localhost:${PORT}`);
   console.log(`📋 Health check: http://localhost:${PORT}/api/health`);
 });

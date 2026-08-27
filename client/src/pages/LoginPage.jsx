@@ -35,7 +35,7 @@ export default function LoginPage({ onNavigate, prefill }) {
           <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-electric-500 to-neon flex items-center justify-center shadow-electric mb-4">
             <Zap size={26} className="text-navy font-black" />
           </div>
-          <h1 className="font-display font-black text-3xl text-white">FinFlow</h1>
+          <h1 className="font-display font-black text-3xl text-white">Cashlyne</h1>
           <p className="text-white/40 font-body text-sm mt-1">Personal Finance Manager</p>
         </div>
 

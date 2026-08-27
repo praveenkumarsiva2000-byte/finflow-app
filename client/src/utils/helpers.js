@@ -118,6 +118,6 @@ export const exportToCSV = (expenses) => {
   const blob = new Blob([csv], { type: "text/csv" });
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
-  a.href = url; a.download = `finflow-expenses-${format(new Date(), "yyyy-MM-dd")}.csv`;
+  a.href = url; a.download = `cashlyne-expenses-${format(new Date(), "yyyy-MM-dd")}.csv`;
   a.click(); URL.revokeObjectURL(url);
 };

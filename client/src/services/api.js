@@ -1,6 +1,6 @@
 const BASE_URL = process.env.REACT_APP_API_URL || "http://localhost:5000/api";
 
-const getToken = () => localStorage.getItem("finflow_token");
+const getToken = () => localStorage.getItem("cashlyne_token");
 
 const headers = () => ({
   "Content-Type": "application/json",

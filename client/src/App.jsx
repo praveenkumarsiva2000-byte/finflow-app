@@ -93,7 +93,7 @@ function MainApp() {
               <Zap size={17} className="text-navy font-black" />
             </div>
             <div>
-              <h1 className="font-display font-black text-base text-white leading-none tracking-tight">FinFlow</h1>
+              <h1 className="font-display font-black text-base text-white leading-none tracking-tight">Cashlyne</h1>
               <p className="text-[10px] text-white/30 font-body leading-none mt-0.5">Personal Finance Manager</p>
             </div>
           </div>

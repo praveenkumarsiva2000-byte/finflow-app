@@ -108,7 +108,7 @@ async function sendGoalReminders() {
       daysLeft: g.deadline ? Math.ceil((new Date(g.deadline) - now) / 86400000) : null,
     }));
 
-    await sendMail({ to: user.email, subject: "Your FinFlow goal progress", html: templates.goalReminder(payload) });
+    await sendMail({ to: user.email, subject: "Your Cashlyne goal progress", html: templates.goalReminder(payload) });
   }
 }
 
@@ -130,7 +130,7 @@ async function sendWeeklyReports() {
 
     await sendMail({
       to: user.email,
-      subject: "Your weekly FinFlow summary",
+      subject: "Your weekly Cashlyne summary",
       html: templates.weeklyReport({ income: fmtMoney(totalInc), expenses: fmtMoney(totalExp), net: fmtMoney(totalInc - totalExp) }),
     });
   }

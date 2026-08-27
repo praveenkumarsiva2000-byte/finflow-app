@@ -1,12 +1,13 @@
 {
   "info": {
-    "name": "FinFlow API",
-    "description": "Complete API collection for FinFlow Personal Finance Manager",
+    "name": "Cashlyne API",
+    "description": "Complete API collection for Cashlyne Personal Finance Manager",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "variable": [
     { "key": "base_url", "value": "http://localhost:5000/api", "type": "string" },
-    { "key": "token", "value": "", "type": "string" }
+    { "key": "token", "value": "", "type": "string" },
+    { "key": "resetToken", "value": "", "type": "string" }
   ],
   "item": [
     {
@@ -41,6 +42,34 @@
           }
         },
         {
+          "name": "Forgot Password (send OTP)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{base_url}}/auth/forgot-password",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"praveen@example.com\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Verify OTP",
+          "event": [{
+            "listen": "test",
+            "script": { "exec": ["const r = pm.response.json(); if(r.resetToken) { pm.collectionVariables.set('resetToken', r.resetToken); }"] }
+          }],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{base_url}}/auth/verify-otp",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"praveen@example.com\",\n  \"otp\": \"123456\"\n}"
+            }
+          }
+        },
+        {
           "name": "Reset Password",
           "request": {
             "method": "POST",
@@ -48,7 +77,7 @@
             "url": "{{base_url}}/auth/reset-password",
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"email\": \"praveen@example.com\",\n  \"newPassword\": \"newpassword123\"\n}"
+              "raw": "{\n  \"resetToken\": \"{{resetToken}}\",\n  \"newPassword\": \"newpassword123\"\n}"
             }
           }
         },
@@ -71,7 +100,7 @@
             "url": "{{base_url}}/auth/profile",
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"name\": \"Praveen Kumar Siva\",\n  \"preferences\": {\n    \"currency\": \"INR\",\n    \"notifications\": {\n      \"budgetAlerts\": true,\n      \"goalReminders\": true,\n      \"weeklyReport\": false\n    }\n  }\n}"
+              "raw": "{\n  \"name\": \"Praveen Kumar Siva\",\n  \"email\": \"praveen@example.com\",\n  \"preferences\": {\n    \"currency\": \"INR\",\n    \"notifications\": {\n      \"budgetAlerts\": true,\n      \"goalReminders\": true,\n      \"weeklyReport\": false,\n      \"recurringReminders\": true\n    }\n  }\n}"
             }
           }
         },

@@ -31,7 +31,7 @@ async function sendMail({ to, subject, html }) {
 
   try {
     await t.sendMail({
-      from: process.env.EMAIL_FROM || "FinFlow <no-reply@finflow.app>",
+      from: process.env.EMAIL_FROM || "Cashlyne <no-reply@cashlyne.app>",
       to,
       subject,
       html,
@@ -43,10 +43,10 @@ async function sendMail({ to, subject, html }) {
 
 const wrap = (title, bodyHtml) => `
   <div style="font-family:Arial,sans-serif;max-width:480px;margin:0 auto;padding:24px;color:#1a1a1a;">
-    <h2 style="color:#0d87f0;margin-bottom:4px;">FinFlow</h2>
+    <h2 style="color:#0d87f0;margin-bottom:4px;">Cashlyne</h2>
     <h3 style="margin-top:0;">${title}</h3>
     ${bodyHtml}
-    <p style="color:#888;font-size:12px;margin-top:32px;">You're receiving this because of your FinFlow notification preferences. Manage them anytime in your Profile settings.</p>
+    <p style="color:#888;font-size:12px;margin-top:32px;">You're receiving this because of your Cashlyne notification preferences. Manage them anytime in your Profile settings.</p>
   </div>
 `;
 

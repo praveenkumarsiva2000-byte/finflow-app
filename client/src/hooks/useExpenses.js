@@ -12,7 +12,7 @@ export function useExpenses() {
 
   // Load everything once on mount
   useEffect(() => {
-    const token = localStorage.getItem("finflow_token");
+    const token = localStorage.getItem("cashlyne_token");
     if (!token) { setLoading(false); return; }
 
     const loadAll = async () => {
