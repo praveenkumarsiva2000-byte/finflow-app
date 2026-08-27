@@ -1,33 +1,58 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Zap, Mail, Lock, Eye, EyeOff, ArrowLeft, ArrowRight, Loader2, CheckCircle2, KeyRound } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 
+const RESEND_COOLDOWN = 30;
+
 export default function ForgotPasswordPage({ onNavigate }) {
-  const { resetPassword } = useAuth();
-  const [step, setStep] = useState(1); // 1=email, 2=new password
+  const { requestPasswordReset, verifyResetOtp, confirmPasswordReset } = useAuth();
+  const [step, setStep] = useState(1); // 1=email, 2=otp, 3=new password
   const [email, setEmail] = useState("");
+  const [otp, setOtp] = useState("");
+  const [resetToken, setResetToken] = useState("");
   const [form, setForm] = useState({ password: "", confirm: "" });
   const [showPw, setShowPw] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [done, setDone] = useState(false);
+  const [cooldown, setCooldown] = useState(0);
+  const timerRef = useRef(null);
 
-  const verifyEmail = async () => {
+  useEffect(() => {
+    if (cooldown <= 0) return;
+    timerRef.current = setTimeout(() => setCooldown((c) => c - 1), 1000);
+    return () => clearTimeout(timerRef.current);
+  }, [cooldown]);
+
+  const sendCode = async () => {
     if (!email) { setError("Email is required."); return; }
     if (!/^[^@]+@[^@]+\.[^@]+$/.test(email)) { setError("Enter a valid email."); return; }
     setLoading(true);
-    await new Promise((r) => setTimeout(r, 700));
+    const res = await requestPasswordReset(email);
     setLoading(false);
+    if (!res.success) { setError(res.error); return; }
     setError("");
+    setOtp("");
+    setCooldown(RESEND_COOLDOWN);
     setStep(2);
+  };
+
+  const verifyCode = async () => {
+    if (otp.length !== 6) { setError("Enter the 6-digit code."); return; }
+    setLoading(true);
+    const res = await verifyResetOtp({ email, otp });
+    setLoading(false);
+    if (!res.success) { setError(res.error); return; }
+    setError("");
+    setResetToken(res.resetToken);
+    setStep(3);
   };
 
   const handleReset = async () => {
     if (form.password.length < 6) { setError("Password must be at least 6 characters."); return; }
     if (form.password !== form.confirm) { setError("Passwords don't match."); return; }
     setLoading(true);
-    await new Promise((r) => setTimeout(r, 600));
-    const res = resetPassword({ email, newPassword: form.password });
+    const res = await confirmPasswordReset({ resetToken, newPassword: form.password });
     setLoading(false);
     if (!res.success) { setError(res.error); return; }
     setDone(true);
@@ -74,20 +99,20 @@ export default function ForgotPasswordPage({ onNavigate }) {
             <div>
               <h2 className="font-display font-bold text-xl text-white">Reset Password</h2>
               <p className="text-sm text-white/40 font-body mt-0.5">
-                {step === 1 ? "Enter your email to continue" : "Set your new password"}
+                {step === 1 ? "Enter your email to continue" : step === 2 ? "Enter the code we sent you" : "Set your new password"}
               </p>
             </div>
           </div>
 
           {/* Step indicator */}
           <div className="flex items-center gap-2 mb-6">
-            {[1, 2].map((s) => (
+            {[1, 2, 3].map((s) => (
               <div key={s} className="flex items-center gap-2">
                 <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-display font-bold transition-all ${step >= s ? "bg-electric-500 text-white" : "bg-navy-border text-white/30"}`}>{s}</div>
-                {s < 2 && <div className={`h-px w-8 transition-all ${step > s ? "bg-electric-500" : "bg-navy-border"}`} />}
+                {s < 3 && <div className={`h-px w-8 transition-all ${step > s ? "bg-electric-500" : "bg-navy-border"}`} />}
               </div>
             ))}
-            <p className="text-xs text-white/30 font-body ml-1">{step === 1 ? "Verify email" : "New password"}</p>
+            <p className="text-xs text-white/30 font-body ml-1">{step === 1 ? "Email" : step === 2 ? "Verify" : "New password"}</p>
           </div>
 
           {step === 1 && (
@@ -98,7 +123,7 @@ export default function ForgotPasswordPage({ onNavigate }) {
                   <Mail size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-white/35" />
                   <input type="email" value={email} onChange={(e) => { setEmail(e.target.value); setError(""); }}
                     placeholder="you@example.com" className="input-field pl-10 text-sm"
-                    onKeyDown={(e) => e.key === "Enter" && verifyEmail()} />
+                    onKeyDown={(e) => e.key === "Enter" && sendCode()} />
                 </div>
               </div>
               {error && (
@@ -106,14 +131,47 @@ export default function ForgotPasswordPage({ onNavigate }) {
                   <span className="text-rose text-xs font-body">{error}</span>
                 </div>
               )}
-              <button onClick={verifyEmail} disabled={loading}
+              <button onClick={sendCode} disabled={loading}
                 className="w-full btn-primary flex items-center justify-center gap-2 py-3">
-                {loading ? <Loader2 size={16} className="animate-spin" /> : <><span>Continue</span><ArrowRight size={15} /></>}
+                {loading ? <Loader2 size={16} className="animate-spin" /> : <><span>Send Code</span><ArrowRight size={15} /></>}
               </button>
             </div>
           )}
 
           {step === 2 && (
+            <div className="space-y-4">
+              <div className="p-3 rounded-xl bg-electric-500/10 border border-electric-500/20">
+                <p className="text-xs font-body text-white/50">Code sent to <span className="text-electric-400 font-semibold">{email}</span></p>
+              </div>
+              <div>
+                <label className="text-xs font-display font-semibold text-white/50 uppercase tracking-wider mb-1.5 block">6-Digit Code</label>
+                <input
+                  type="text" inputMode="numeric" maxLength={6} value={otp}
+                  onChange={(e) => { setOtp(e.target.value.replace(/\D/g, "").slice(0, 6)); setError(""); }}
+                  placeholder="000000" className="input-field text-center text-2xl tracking-[0.5em] font-display font-bold"
+                  onKeyDown={(e) => e.key === "Enter" && verifyCode()}
+                />
+              </div>
+              {error && (
+                <div className="p-3 rounded-xl bg-rose/10 border border-rose/20 animate-fade-in">
+                  <span className="text-rose text-xs font-body">{error}</span>
+                </div>
+              )}
+              <button onClick={verifyCode} disabled={loading}
+                className="w-full btn-primary flex items-center justify-center gap-2 py-3">
+                {loading ? <Loader2 size={16} className="animate-spin" /> : <><span>Verify Code</span><ArrowRight size={15} /></>}
+              </button>
+              <button
+                onClick={sendCode}
+                disabled={cooldown > 0 || loading}
+                className="w-full text-xs text-white/40 hover:text-white/70 font-body transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+              >
+                {cooldown > 0 ? `Resend code in ${cooldown}s` : "Resend code"}
+              </button>
+            </div>
+          )}
+
+          {step === 3 && (
             <div className="space-y-4">
               <div className="p-3 rounded-xl bg-electric-500/10 border border-electric-500/20">
                 <p className="text-xs font-body text-white/50">Resetting for <span className="text-electric-400 font-semibold">{email}</span></p>

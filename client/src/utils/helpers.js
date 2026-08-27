@@ -1,7 +1,28 @@
 import { format, isToday, isYesterday, parseISO, startOfMonth, endOfMonth, isWithinInterval, subMonths } from "date-fns";
 
-export const formatCurrency = (amount) =>
-  new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR", maximumFractionDigits: 0 }).format(amount || 0);
+export const CURRENCIES = [
+  { code: "INR", label: "Indian Rupee (₹)", locale: "en-IN" },
+  { code: "USD", label: "US Dollar ($)", locale: "en-US" },
+  { code: "EUR", label: "Euro (€)", locale: "de-DE" },
+  { code: "GBP", label: "British Pound (£)", locale: "en-GB" },
+  { code: "JPY", label: "Japanese Yen (¥)", locale: "ja-JP" },
+  { code: "AUD", label: "Australian Dollar (A$)", locale: "en-AU" },
+  { code: "CAD", label: "Canadian Dollar (C$)", locale: "en-CA" },
+  { code: "SGD", label: "Singapore Dollar (S$)", locale: "en-SG" },
+  { code: "AED", label: "UAE Dirham (د.إ)", locale: "ar-AE" },
+  { code: "CNY", label: "Chinese Yuan (¥)", locale: "zh-CN" },
+];
+
+let currentCurrency = "INR";
+
+export const setCurrency = (code) => {
+  if (code && CURRENCIES.some((c) => c.code === code)) currentCurrency = code;
+};
+
+export const formatCurrency = (amount) => {
+  const meta = CURRENCIES.find((c) => c.code === currentCurrency) || CURRENCIES[0];
+  return new Intl.NumberFormat(meta.locale, { style: "currency", currency: meta.code, maximumFractionDigits: 0 }).format(amount || 0);
+};
 
 export const formatDate = (dateStr) => {
   try {

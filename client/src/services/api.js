@@ -22,6 +22,8 @@ export const api = {
   // ── Auth ────────────────────────────────────────────────────────────────
   signup: (data) => req("POST", "/auth/signup", data),
   login: (data) => req("POST", "/auth/login", data),
+  forgotPassword: (email) => req("POST", "/auth/forgot-password", { email }),
+  verifyOtp: (data) => req("POST", "/auth/verify-otp", data),
   resetPassword: (data) => req("POST", "/auth/reset-password", data),
   getProfile: () => req("GET", "/auth/profile"),
   updateProfile: (data) => req("PUT", "/auth/profile", data),

@@ -18,8 +18,12 @@ const userSchema = new mongoose.Schema(
         budgetAlerts: { type: Boolean, default: true },
         goalReminders: { type: Boolean, default: true },
         weeklyReport: { type: Boolean, default: false },
+        recurringReminders: { type: Boolean, default: true },
       },
     },
+    resetOtpHash: { type: String, select: false },
+    resetOtpExpires: { type: Date, select: false },
+    resetOtpAttempts: { type: Number, default: 0, select: false },
   },
   { timestamps: true }
 );

@@ -7,6 +7,8 @@ const budgetSchema = new mongoose.Schema(
       limit: { type: Number, required: [true, "Limit is required"], min: [1, "Limit must be positive"] },
       description: { type: String, default: "", trim: true },
     period: { type: String, enum: ["weekly", "monthly", "yearly"], default: "monthly" },
+    lastAlertLevel: { type: Number, default: 0 },
+    lastAlertPeriodKey: { type: String, default: null },
   },
   { timestamps: true }
 );

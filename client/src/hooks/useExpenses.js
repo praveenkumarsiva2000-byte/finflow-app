@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { api } from "../services/api";
+import { setCurrency } from "../utils/helpers";
 
 export function useExpenses() {
   const [expenses, setExpenses] = useState([]);
@@ -30,6 +31,7 @@ export function useExpenses() {
         setBudgets(bud);
         setGoals(gls);
         setProfile(prof);
+        setCurrency(prof?.preferences?.currency);
       } catch (err) {
         console.error("Failed to load data:", err.message);
       } finally {
@@ -153,6 +155,7 @@ export function useExpenses() {
     try {
       const updated = await api.updateProfile(data);
       setProfile(updated);
+      setCurrency(updated?.preferences?.currency);
       return updated;
     } catch (err) { console.error(err.message); }
   }, []);

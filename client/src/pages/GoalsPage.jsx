@@ -99,7 +99,7 @@ function AddGoalModal({ onAdd, onClose, existing }) {
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label className="text-xs font-display font-semibold text-white/50 uppercase tracking-wider mb-1.5 block">
-                Target (₹)
+                Target Amount
               </label>
               <input
                 type="number"
@@ -112,7 +112,7 @@ function AddGoalModal({ onAdd, onClose, existing }) {
             </div>
             <div>
               <label className="text-xs font-display font-semibold text-white/50 uppercase tracking-wider mb-1.5 block">
-                Already Saved (₹)
+                Already Saved
               </label>
               <input
                 type="number"

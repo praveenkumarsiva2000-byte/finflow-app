@@ -1,13 +1,24 @@
 require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
+const cron = require("node-cron");
 const connectDB = require("./config/db");
+const { runDailyChecks, runWeeklyChecks } = require("./services/notifications");
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 
 // ── Connect to MongoDB ─────────────────────────────────────────────────────
 connectDB();
+
+// ── Notification scheduler ─────────────────────────────────────────────────
+// Daily: budget alerts + recurring expense reminders. Weekly (Mondays): goal reminders + spending summary.
+cron.schedule("0 8 * * *", () => {
+  runDailyChecks().catch((err) => console.error("[notifications] daily check failed:", err.message));
+});
+cron.schedule("0 8 * * 1", () => {
+  runWeeklyChecks().catch((err) => console.error("[notifications] weekly check failed:", err.message));
+});
 
 // ── Middleware ─────────────────────────────────────────────────────────────
 app.use(cors({ origin: process.env.CLIENT_URL || "http://localhost:3000", credentials: true }));

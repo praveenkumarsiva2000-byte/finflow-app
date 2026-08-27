@@ -38,9 +38,27 @@ export function AuthProvider({ children }) {
     setCurrentUser(null);
   }, []);
 
-  const resetPassword = useCallback(async ({ email, newPassword }) => {
+  const requestPasswordReset = useCallback(async (email) => {
     try {
-      await api.resetPassword({ email, newPassword });
+      await api.forgotPassword(email);
+      return { success: true };
+    } catch (err) {
+      return { success: false, error: err.message };
+    }
+  }, []);
+
+  const verifyResetOtp = useCallback(async ({ email, otp }) => {
+    try {
+      const data = await api.verifyOtp({ email, otp });
+      return { success: true, resetToken: data.resetToken };
+    } catch (err) {
+      return { success: false, error: err.message };
+    }
+  }, []);
+
+  const confirmPasswordReset = useCallback(async ({ resetToken, newPassword }) => {
+    try {
+      await api.resetPassword({ resetToken, newPassword });
       return { success: true };
     } catch (err) {
       return { success: false, error: err.message };
@@ -48,7 +66,7 @@ export function AuthProvider({ children }) {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ currentUser, login, signup, logout, resetPassword }}>
+    <AuthContext.Provider value={{ currentUser, login, signup, logout, requestPasswordReset, verifyResetOtp, confirmPasswordReset }}>
       {children}
     </AuthContext.Provider>
   );

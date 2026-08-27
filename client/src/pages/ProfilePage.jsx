@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { User, Bell, Shield, Download, Trash2, ChevronRight, Edit3, Check, RefreshCw } from "lucide-react";
-import { exportToCSV, formatCurrency } from "../utils/helpers";
+import { User, Bell, Shield, Download, Trash2, ChevronRight, Edit3, Check, RefreshCw, Coins } from "lucide-react";
+import { exportToCSV, formatCurrency, CURRENCIES } from "../utils/helpers";
 
 export default function ProfilePage({ profile, updateProfile, expenses, incomes, clearAll }) {
   const [editing, setEditing] = useState(false);
@@ -23,6 +23,7 @@ export default function ProfilePage({ profile, updateProfile, expenses, incomes,
     { ui: "budgetAlert", store: "budgetAlerts", label: "Budget Alerts", sub: "Get notified when approaching limits" },
     { ui: "goalReminder", store: "goalReminders", label: "Goal Reminders", sub: "Weekly goal progress updates" },
     { ui: "weeklyReport", store: "weeklyReport", label: "Weekly Report", sub: "Summary of weekly spending" },
+    { ui: "recurringReminder", store: "recurringReminders", label: "Recurring Reminders", sub: "Alerts before recurring charges" },
   ];
 
   const toggleNotif = (storeKey) => {
@@ -30,6 +31,11 @@ export default function ProfilePage({ profile, updateProfile, expenses, incomes,
     const next = { ...current, [storeKey]: !Boolean(current[storeKey]) };
     // Persist under preferences as expected by the server
     const prefs = { ...(profile && profile.preferences ? profile.preferences : {}), notifications: next };
+    updateProfile({ preferences: prefs });
+  };
+
+  const setCurrencyPref = (code) => {
+    const prefs = { ...(profile && profile.preferences ? profile.preferences : {}), currency: code };
     updateProfile({ preferences: prefs });
   };
 
@@ -88,6 +94,20 @@ export default function ProfilePage({ profile, updateProfile, expenses, incomes,
             </div>
           ))}
         </div>
+      </div>
+
+      {/* Currency */}
+      <div className="glass-card p-5 space-y-3">
+        <h3 className="font-display font-bold text-white flex items-center gap-2"><Coins size={16} className="text-gold" />Currency</h3>
+        <select
+          value={profile?.preferences?.currency || "INR"}
+          onChange={(e) => setCurrencyPref(e.target.value)}
+          className="input-field text-sm"
+        >
+          {CURRENCIES.map(({ code, label }) => (
+            <option key={code} value={code}>{label}</option>
+          ))}
+        </select>
       </div>
 
       {/* Notifications */}

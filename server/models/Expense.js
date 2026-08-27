@@ -11,6 +11,7 @@ const expenseSchema = new mongoose.Schema(
     frequency: { type: String, enum: ["daily", "weekly", "monthly", "yearly"], default: "monthly" },
     recurringSourceId: { type: mongoose.Schema.Types.ObjectId, ref: "Expense", default: null },
     recurringPeriodKey: { type: String, default: null },
+    lastReminderPeriodKey: { type: String, default: null },
   },
   { timestamps: true }
 );
