@@ -120,7 +120,7 @@ export default function LoginPage({ onNavigate, prefill }) {
         </div>
 
         <p className="text-center text-xs text-white/20 font-body mt-6">
-          Your data stays local — private & secure
+          Your data stays local private & secure
         </p>
       </div>
     </div>
