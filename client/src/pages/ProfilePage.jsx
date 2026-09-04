@@ -1,8 +1,8 @@
 import { useState } from "react";
-import { User, Bell, Shield, Download, Trash2, ChevronRight, Edit3, Check, RefreshCw, Coins } from "lucide-react";
+import { User, Bell, Shield, Download, Trash2, ChevronRight, Edit3, Check, RefreshCw, Coins, Tag } from "lucide-react";
 import { exportToCSV, formatCurrency, CURRENCIES } from "../utils/helpers";
 
-export default function ProfilePage({ profile, updateProfile, expenses, incomes, clearAll }) {
+export default function ProfilePage({ profile, updateProfile, expenses, incomes, clearAll, deleteCustomCategory }) {
   const [editing, setEditing] = useState(false);
   const [form, setForm] = useState({ name: profile?.name || "", email: profile?.email || "" });
   const [showClear, setShowClear] = useState(false);
@@ -131,6 +131,39 @@ export default function ProfilePage({ profile, updateProfile, expenses, incomes,
           })}
         </div>
       </div>
+
+      {/* Custom Categories */}
+      {(profile?.preferences?.customCategories?.expense?.length > 0 || profile?.preferences?.customCategories?.income?.length > 0) && (
+        <div className="glass-card p-5 space-y-4">
+          <h3 className="font-display font-bold text-white flex items-center gap-2"><Tag size={16} className="text-electric-400" />Custom Categories</h3>
+          {profile.preferences.customCategories.expense?.length > 0 && (
+            <div className="space-y-2">
+              <p className="text-xs font-display font-semibold text-white/40 uppercase tracking-wider">Expense</p>
+              <div className="flex flex-wrap gap-2">
+                {profile.preferences.customCategories.expense.map((c) => (
+                  <span key={c.id} className="flex items-center gap-1.5 tag-pill bg-white/5 text-white/60 border border-navy-border">
+                    {c.label}
+                    <button onClick={() => deleteCustomCategory("expense", c.id)} className="text-white/30 hover:text-rose transition-colors"><Trash2 size={11} /></button>
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+          {profile.preferences.customCategories.income?.length > 0 && (
+            <div className="space-y-2">
+              <p className="text-xs font-display font-semibold text-white/40 uppercase tracking-wider">Income</p>
+              <div className="flex flex-wrap gap-2">
+                {profile.preferences.customCategories.income.map((c) => (
+                  <span key={c.id} className="flex items-center gap-1.5 tag-pill bg-white/5 text-white/60 border border-navy-border">
+                    {c.label}
+                    <button onClick={() => deleteCustomCategory("income", c.id)} className="text-white/30 hover:text-rose transition-colors"><Trash2 size={11} /></button>
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Data Management */}
       <div className="glass-card p-5 space-y-3">

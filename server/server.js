@@ -4,12 +4,20 @@ const cors = require("cors");
 const cron = require("node-cron");
 const connectDB = require("./config/db");
 const { runDailyChecks, runWeeklyChecks } = require("./services/notifications");
+const { generateRecurringForAllUsers } = require("./services/recurringGenerator");
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 
 // ── Connect to MongoDB ─────────────────────────────────────────────────────
 connectDB();
+
+// ── Recurring expense generator ──────────────────────────────────────────
+// Runs daily so recurring instances are created even if a user never opens
+// the app that month; also backfills any periods that were missed.
+cron.schedule("0 1 * * *", () => {
+  generateRecurringForAllUsers().catch((err) => console.error("[recurring] generation failed:", err.message));
+});
 
 // ── Notification scheduler ─────────────────────────────────────────────────
 // Daily: budget alerts + recurring expense reminders. Weekly (Mondays): goal reminders + spending summary.

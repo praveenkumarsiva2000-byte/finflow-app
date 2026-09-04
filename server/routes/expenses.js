@@ -2,7 +2,7 @@ const express = require("express");
 const { body, validationResult } = require("express-validator");
 const Expense = require("../models/Expense");
 const auth = require("../middleware/auth");
-const { getPeriodKey, getDueDate } = require("../utils/recurring");
+const { generateRecurringForUser } = require("../services/recurringGenerator");
 
 const router = express.Router();
 
@@ -30,35 +30,10 @@ router.get("/", async (req, res) => {
 });
 
 // ── POST /api/expenses/generate-recurring ─────────────────────────────────
-// Creates expense entries for recurring templates for the current period (daily/weekly/monthly/yearly) if not already created
+// Backfills any expense instances a recurring template is missing, up to now.
 router.post("/generate-recurring", async (req, res) => {
   try {
-    const recurringTemplates = await Expense.find({ userId: req.userId, isRecurring: true, recurringSourceId: null });
-    const now = new Date();
-    const created = [];
-
-    for (const t of recurringTemplates) {
-      const frequency = t.frequency || "monthly";
-      const periodKey = getPeriodKey(frequency, now);
-
-      // check if this template already generated an instance for the current period
-      const exists = await Expense.findOne({ userId: req.userId, recurringSourceId: t._id, recurringPeriodKey: periodKey });
-      if (exists) continue;
-
-      const dateStr = getDueDate(frequency, t.date, now);
-      const exp = await Expense.create({
-        userId: req.userId,
-        amount: t.amount,
-        category: t.category,
-        date: dateStr,
-        note: t.note || "",
-        isRecurring: false,
-        recurringSourceId: t._id,
-        recurringPeriodKey: periodKey,
-      });
-      created.push(exp);
-    }
-
+    const created = await generateRecurringForUser(req.userId);
     res.json({ created });
   } catch (err) {
     console.error(err);

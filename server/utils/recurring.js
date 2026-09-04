@@ -40,4 +40,25 @@ function getDueDate(frequency, templateDate, now) {
   }
 }
 
-module.exports = { getPeriodKey, getDueDate };
+// Advances a date by one unit of the given frequency.
+function addPeriod(date, frequency) {
+  const d = new Date(date);
+  switch (frequency) {
+    case "daily":
+      d.setDate(d.getDate() + 1);
+      break;
+    case "weekly":
+      d.setDate(d.getDate() + 7);
+      break;
+    case "yearly":
+      d.setFullYear(d.getFullYear() + 1);
+      break;
+    case "monthly":
+    default:
+      d.setMonth(d.getMonth() + 1);
+      break;
+  }
+  return d;
+}
+
+module.exports = { getPeriodKey, getDueDate, addPeriod };

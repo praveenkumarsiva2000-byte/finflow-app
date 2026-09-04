@@ -1,7 +1,7 @@
 import { useState } from "react";
 import * as Icons from "lucide-react";
 import { Search, SlidersHorizontal, X, ChevronDown } from "lucide-react";
-import { CATEGORIES } from "../utils/categories";
+import { getCategories } from "../utils/categories";
 
 const defaultFilters = { search: "", category: "all", dateFrom: "", dateTo: "", minAmount: "", maxAmount: "", sort: "recent" };
 
@@ -35,7 +35,7 @@ export default function FilterBar({ filters, onChange }) {
       <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none">
         <button onClick={() => setFilter("category", "all")}
           className={`tag-pill shrink-0 border transition-all ${filters.category === "all" ? "bg-electric-500/20 text-electric-400 border-electric-500/40" : "bg-white/5 text-white/40 border-navy-border hover:text-white/70"}`}>All</button>
-        {CATEGORIES.map((cat) => {
+        {getCategories().map((cat) => {
           const Icon = Icons[cat.icon] || Icons.Package;
           return (
             <button key={cat.id} onClick={() => setFilter("category", cat.id)}

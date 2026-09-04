@@ -56,7 +56,7 @@ function AuthGate() {
 
 function MainApp() {
   const { currentUser, logout } = useAuth();
-  const { expenses, addExpense, deleteExpense, updateExpense, clearAll, clearAllData, budgets, addBudget, deleteBudget, updateBudget, goals, addGoal, updateGoalProgress, deleteGoal, updateGoal, incomes, addIncome, deleteIncome, updateIncome, profile, updateProfile } = useExpenses();
+  const { expenses, addExpense, deleteExpense, updateExpense, clearAll, clearAllData, budgets, addBudget, deleteBudget, updateBudget, goals, addGoal, updateGoalProgress, deleteGoal, updateGoal, incomes, addIncome, deleteIncome, updateIncome, profile, updateProfile, addCustomCategory, deleteCustomCategory } = useExpenses();
   const [filters, setFilters] = useState(defaultFilters);
   const [showModal, setShowModal] = useState(false);
   const [showBudgetAlerts, setShowBudgetAlerts] = useState(true);
@@ -155,7 +155,7 @@ function MainApp() {
                     <h3 className="font-display font-bold text-white">Recent Expenses</h3>
                     <button onClick={() => setActiveTab("expenses")} className="text-xs text-electric-400 hover:text-electric-300 font-display font-semibold transition-colors">View all →</button>
                   </div>
-                  <ExpenseList expenses={filtered.slice(0, 5)} onDelete={deleteExpense} />
+                  <ExpenseList expenses={filtered.slice(0, 5)} onDelete={deleteExpense} updateExpense={updateExpense} />
                 </div>
               </div>
               <div className="space-y-4">
@@ -216,7 +216,7 @@ function MainApp() {
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
               <div className="lg:col-span-2 space-y-4">
                 <Charts expenses={filtered} />
-                <ExpenseList expenses={filtered} onDelete={deleteExpense} />
+                <ExpenseList expenses={filtered} onDelete={deleteExpense} updateExpense={updateExpense} />
               </div>
               <div className="space-y-4">
                 <CategoryBreakdown expenses={filtered} />
@@ -225,11 +225,11 @@ function MainApp() {
           </div>
         )}
 
-        {activeTab === "income" && <IncomePage incomes={incomes} addIncome={addIncome} deleteIncome={deleteIncome} updateIncome={updateIncome} expenses={expenses} />}
-        {activeTab === "budget" && <BudgetPage budgets={budgets} addBudget={addBudget} deleteBudget={deleteBudget} expenses={expenses} />}
+        {activeTab === "income" && <IncomePage incomes={incomes} addIncome={addIncome} deleteIncome={deleteIncome} updateIncome={updateIncome} expenses={expenses} onAddCategory={addCustomCategory} />}
+        {activeTab === "budget" && <BudgetPage budgets={budgets} addBudget={addBudget} deleteBudget={deleteBudget} expenses={expenses} onAddCategory={addCustomCategory} />}
         {activeTab === "goals" && <GoalsPage goals={goals} addGoal={addGoal} updateGoalProgress={updateGoalProgress} deleteGoal={deleteGoal} updateGoal={updateGoal} />}
         {activeTab === "reports" && <ReportsPage expenses={expenses} incomes={incomes} budgets={budgets} />}
-        {activeTab === "profile" && <ProfilePage profile={profile} updateProfile={updateProfile} expenses={expenses} incomes={incomes} clearAll={clearAllData} />}
+        {activeTab === "profile" && <ProfilePage profile={profile} updateProfile={updateProfile} expenses={expenses} incomes={incomes} clearAll={clearAllData} deleteCustomCategory={deleteCustomCategory} />}
       </main>
 
       {/* Mobile bottom nav */}
@@ -258,7 +258,7 @@ function MainApp() {
         </div>
       )}
 
-      {showModal && <AddExpenseModal onAdd={addExpense} onClose={() => setShowModal(false)} />}
+      {showModal && <AddExpenseModal onAdd={addExpense} onClose={() => setShowModal(false)} onAddCategory={(label) => addCustomCategory("expense", label)} />}
     </div>
   );
 }

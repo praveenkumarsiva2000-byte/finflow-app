@@ -1,9 +1,8 @@
 import { Receipt } from "lucide-react";
 import { groupExpensesByDate } from "../utils/helpers";
 import ExpenseItem from "./ExpenseItem";
-import { useExpenses } from "../hooks/useExpenses";
 
-export default function ExpenseList({ expenses, onDelete }) {
+export default function ExpenseList({ expenses, onDelete, updateExpense }) {
   if (expenses.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-16 text-center animate-fade-in">
@@ -15,7 +14,6 @@ export default function ExpenseList({ expenses, onDelete }) {
       </div>
     );
   }
-  const { updateExpense } = useExpenses();
   const grouped = groupExpensesByDate(expenses);
   return (
     <div className="space-y-5 stagger">

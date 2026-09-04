@@ -1,11 +1,12 @@
 import { useState } from "react";
 import * as Icons from "lucide-react";
 import { Plus, Trash2, TrendingUp, IndianRupee, Edit3 } from "lucide-react";
-import { INCOME_CATEGORIES, getIncomeCategoryById } from "../utils/categories";
+import { getIncomeCategories, getIncomeCategoryById } from "../utils/categories";
 import { formatCurrency, formatDate } from "../utils/helpers";
 import { format, startOfMonth, endOfMonth, isWithinInterval, parseISO } from "date-fns";
+import AddCategoryTile from "../components/AddCategoryTile";
 
-function AddIncomeModal({ onAdd, onClose }) {
+function AddIncomeModal({ onAdd, onClose, onAddCategory }) {
   const [form, setForm] = useState({ amount: "", source: "salary", date: format(new Date(), "yyyy-MM-dd"), note: "" });
   const [error, setError] = useState("");
 
@@ -35,7 +36,7 @@ function AddIncomeModal({ onAdd, onClose }) {
           <div>
             <label className="text-xs font-display font-semibold text-white/50 uppercase tracking-wider mb-2 block">Source</label>
             <div className="grid grid-cols-3 gap-2">
-              {INCOME_CATEGORIES.map((cat) => {
+              {getIncomeCategories().map((cat) => {
                 const Icon = Icons[cat.icon] || Icons.Package;
                 return (
                   <button key={cat.id} type="button" onClick={() => setForm((f) => ({ ...f, source: cat.id }))}
@@ -46,6 +47,10 @@ function AddIncomeModal({ onAdd, onClose }) {
                   </button>
                 );
               })}
+              <AddCategoryTile onAdd={async (label) => {
+                const newCat = await onAddCategory(label);
+                if (newCat) setForm((f) => ({ ...f, source: newCat.id }));
+              }} />
             </div>
           </div>
           <div className="grid grid-cols-2 gap-3">
@@ -69,7 +74,7 @@ function AddIncomeModal({ onAdd, onClose }) {
   );
 }
 
-export default function IncomePage({ incomes, addIncome, deleteIncome, updateIncome, expenses }) {
+export default function IncomePage({ incomes, addIncome, deleteIncome, updateIncome, expenses, onAddCategory }) {
   const [showModal, setShowModal] = useState(false);
 
   const now = new Date();
@@ -118,7 +123,7 @@ export default function IncomePage({ incomes, addIncome, deleteIncome, updateInc
         <div className="glass-card p-5">
           <h3 className="font-display font-bold text-white mb-4">By Source</h3>
           <div className="space-y-3">
-            {INCOME_CATEGORIES.filter((c) => byCategory[c.id]).map((cat) => {
+            {getIncomeCategories().filter((c) => byCategory[c.id]).map((cat) => {
               const Icon = Icons[cat.icon] || Icons.Package;
               const amt = byCategory[cat.id] || 0;
               const pct = totalIncome > 0 ? (amt / totalIncome) * 100 : 0;
@@ -162,7 +167,7 @@ export default function IncomePage({ incomes, addIncome, deleteIncome, updateInc
       )}
 
     </div>
-    {showModal && <AddIncomeModal onAdd={addIncome} onClose={() => setShowModal(false)} />}
+    {showModal && <AddIncomeModal onAdd={addIncome} onClose={() => setShowModal(false)} onAddCategory={(label) => onAddCategory("income", label)} />}
     </>
   );
 }

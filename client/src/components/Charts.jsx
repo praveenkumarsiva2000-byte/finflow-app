@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, LineChart, Line, Area, AreaChart } from "recharts";
 import * as Icons from "lucide-react";
-import { CATEGORIES, getCategoryById } from "../utils/categories";
+import { getCategories, getCategoryById } from "../utils/categories";
 import { getTotalByCategory, getMonthlyTrend, getDailyTrend, formatCurrency } from "../utils/helpers";
 import { PieChart as PieIcon, BarChart2, TrendingUp } from "lucide-react";
 
@@ -39,7 +39,7 @@ export default function Charts({ expenses }) {
 
   const categoryTotals = getTotalByCategory(expenses);
   const total = Object.values(categoryTotals).reduce((s, v) => s + v, 0);
-  const pieData = CATEGORIES
+  const pieData = getCategories()
     .filter((cat) => categoryTotals[cat.id] > 0)
     .map((cat) => ({ name: cat.id, value: categoryTotals[cat.id], color: cat.color, percent: total > 0 ? Math.round((categoryTotals[cat.id] / total) * 100) : 0 }));
   const barData = getDailyTrend(expenses, 7);

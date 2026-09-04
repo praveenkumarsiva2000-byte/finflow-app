@@ -20,6 +20,10 @@ const userSchema = new mongoose.Schema(
         weeklyReport: { type: Boolean, default: false },
         recurringReminders: { type: Boolean, default: true },
       },
+      customCategories: {
+        expense: { type: [{ id: String, label: String }], default: [] },
+        income: { type: [{ id: String, label: String }], default: [] },
+      },
     },
     resetOtpHash: { type: String, select: false },
     resetOtpExpires: { type: Date, select: false },

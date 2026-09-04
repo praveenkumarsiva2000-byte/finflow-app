@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { api } from "../services/api";
 import { setCurrency } from "../utils/helpers";
+import { setCustomCategories, slugifyCategory, CATEGORIES, INCOME_CATEGORIES } from "../utils/categories";
 
 export function useExpenses() {
   const [expenses, setExpenses] = useState([]);
@@ -32,6 +33,7 @@ export function useExpenses() {
         setGoals(gls);
         setProfile(prof);
         setCurrency(prof?.preferences?.currency);
+        setCustomCategories(prof?.preferences?.customCategories);
       } catch (err) {
         console.error("Failed to load data:", err.message);
       } finally {
@@ -156,9 +158,33 @@ export function useExpenses() {
       const updated = await api.updateProfile(data);
       setProfile(updated);
       setCurrency(updated?.preferences?.currency);
+      setCustomCategories(updated?.preferences?.customCategories);
       return updated;
     } catch (err) { console.error(err.message); }
   }, []);
+
+  // ── Custom categories ───────────────────────────────────────────────────
+  const addCustomCategory = useCallback(async (type, label) => {
+    if (!label || !label.trim()) return null;
+    const current = profile?.preferences?.customCategories || { expense: [], income: [] };
+    const list = current[type] || [];
+    const existingIds = [
+      ...(type === "expense" ? CATEGORIES : INCOME_CATEGORIES).map((c) => c.id),
+      ...list.map((c) => c.id),
+    ];
+    const id = slugifyCategory(label, existingIds);
+    const newCat = { id, label: label.trim() };
+    const prefs = { ...(profile?.preferences || {}), customCategories: { ...current, [type]: [...list, newCat] } };
+    await updateProfile({ preferences: prefs });
+    return newCat;
+  }, [profile, updateProfile]);
+
+  const deleteCustomCategory = useCallback(async (type, id) => {
+    const current = profile?.preferences?.customCategories || { expense: [], income: [] };
+    const list = (current[type] || []).filter((c) => c.id !== id);
+    const prefs = { ...(profile?.preferences || {}), customCategories: { ...current, [type]: list } };
+    await updateProfile({ preferences: prefs });
+  }, [profile, updateProfile]);
 
   // ── Clear all financial data (keep user/auth) ────────────────────────────
   const clearAll = useCallback(async () => {
@@ -187,6 +213,7 @@ export function useExpenses() {
     addGoal, updateGoalProgress, deleteGoal,
     updateGoal,
     updateProfile,
+    addCustomCategory, deleteCustomCategory,
     clearAll, clearAllData: clearAll,
   };
 }

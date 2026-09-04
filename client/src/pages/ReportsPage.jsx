@@ -2,7 +2,7 @@ import { useState } from "react";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Area, AreaChart, PieChart, Pie, Cell } from "recharts";
 import * as Icons from "lucide-react";
 import { Download, FileText, TrendingUp, PieChart as PieIcon, BarChart2 } from "lucide-react";
-import { CATEGORIES, getCategoryById } from "../utils/categories";
+import { getCategories, getCategoryById } from "../utils/categories";
 import { formatCurrency, getMonthlyTrend, getTotalByCategory, exportToCSV } from "../utils/helpers";
 import { format, startOfMonth, endOfMonth, isWithinInterval, parseISO, subMonths } from "date-fns";
 import { jsPDF } from "jspdf";
@@ -25,7 +25,7 @@ export default function ReportsPage({ expenses, incomes = [], budgets = [] }) {
 
   const categoryTotals = getTotalByCategory(expenses);
   const total = Object.values(categoryTotals).reduce((s, v) => s + v, 0);
-  const pieData = CATEGORIES.filter((c) => categoryTotals[c.id] > 0).map((c) => ({ name: c.label, value: categoryTotals[c.id], color: c.color, pct: total > 0 ? Math.round((categoryTotals[c.id] / total) * 100) : 0 }));
+  const pieData = getCategories().filter((c) => categoryTotals[c.id] > 0).map((c) => ({ name: c.label, value: categoryTotals[c.id], color: c.color, pct: total > 0 ? Math.round((categoryTotals[c.id] / total) * 100) : 0 }));
 
   const now = new Date();
   const monthStart = startOfMonth(now); const monthEnd = endOfMonth(now);

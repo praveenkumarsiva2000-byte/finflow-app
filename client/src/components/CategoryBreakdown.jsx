@@ -1,11 +1,11 @@
 import * as Icons from "lucide-react";
-import { CATEGORIES } from "../utils/categories";
+import { getCategories } from "../utils/categories";
 import { getTotalByCategory, formatCurrency } from "../utils/helpers";
 
 export default function CategoryBreakdown({ expenses }) {
   const totals = getTotalByCategory(expenses);
   const grand = Object.values(totals).reduce((s, v) => s + v, 0);
-  const sorted = CATEGORIES.filter((c) => totals[c.id] > 0).sort((a, b) => (totals[b.id] || 0) - (totals[a.id] || 0));
+  const sorted = getCategories().filter((c) => totals[c.id] > 0).sort((a, b) => (totals[b.id] || 0) - (totals[a.id] || 0));
 
   if (sorted.length === 0) {
     return (

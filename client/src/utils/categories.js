@@ -12,9 +12,6 @@ export const CATEGORIES = [
   { id: "others", label: "Others", icon: "Package", color: "#94a3b8", bg: "bg-slate-500/15", text: "text-slate-400", border: "border-slate-500/25" },
 ];
 
-export const getCategoryById = (id) =>
-  CATEGORIES.find((c) => c.id === id) || CATEGORIES[CATEGORIES.length - 1];
-
 export const INCOME_CATEGORIES = [
   { id: "salary", label: "Salary", icon: "Briefcase", color: "#00e5a0" },
   { id: "freelance", label: "Freelance", icon: "Laptop", color: "#38bdf8" },
@@ -23,5 +20,48 @@ export const INCOME_CATEGORIES = [
   { id: "gift", label: "Gift / Other", icon: "Gift", color: "#fb923c" },
 ];
 
+// ── Custom categories ───────────────────────────────────────────────────────
+// Per-user categories added on top of the predefined lists above, persisted via
+// profile.preferences.customCategories and mirrored here (same pattern as
+// setCurrency in helpers.js) so every picker/lookup in the app can see them
+// without prop-drilling the profile through every component.
+const hashStr = (s) => {
+  let h = 0;
+  for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) >>> 0;
+  return h;
+};
+
+// Reuse the exact Tailwind class strings already present in CATEGORIES so the
+// JIT compiler has statically seen them — dynamically built class names would
+// be purged from the production CSS build.
+const EXPENSE_STYLE_POOL = CATEGORIES.map(({ bg, text, border, color }) => ({ bg, text, border, color }));
+const INCOME_COLOR_POOL = INCOME_CATEGORIES.map((c) => c.color);
+
+let customExpenseCategories = [];
+let customIncomeCategories = [];
+
+export const setCustomCategories = (custom) => {
+  customExpenseCategories = Array.isArray(custom?.expense) ? custom.expense : [];
+  customIncomeCategories = Array.isArray(custom?.income) ? custom.income : [];
+};
+
+const decorateExpense = (c) => ({ icon: "Tag", ...EXPENSE_STYLE_POOL[hashStr(c.id) % EXPENSE_STYLE_POOL.length], ...c, custom: true });
+const decorateIncome = (c) => ({ icon: "Tag", color: INCOME_COLOR_POOL[hashStr(c.id) % INCOME_COLOR_POOL.length], ...c, custom: true });
+
+export const getCategories = () => [...CATEGORIES, ...customExpenseCategories.map(decorateExpense)];
+export const getIncomeCategories = () => [...INCOME_CATEGORIES, ...customIncomeCategories.map(decorateIncome)];
+
+export const getCategoryById = (id) =>
+  getCategories().find((c) => c.id === id) || CATEGORIES[CATEGORIES.length - 1];
+
 export const getIncomeCategoryById = (id) =>
-  INCOME_CATEGORIES.find((c) => c.id === id) || INCOME_CATEGORIES[INCOME_CATEGORIES.length - 1];
+  getIncomeCategories().find((c) => c.id === id) || INCOME_CATEGORIES[INCOME_CATEGORIES.length - 1];
+
+// Turns a user-typed label into a unique, storage-safe id.
+export const slugifyCategory = (label, existingIds) => {
+  const base = label.trim().toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-+|-+$)/g, "") || "category";
+  let id = base;
+  let n = 2;
+  while (existingIds.includes(id)) { id = `${base}-${n}`; n++; }
+  return id;
+};

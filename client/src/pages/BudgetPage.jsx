@@ -1,11 +1,12 @@
 import { useState } from "react";
 import * as Icons from "lucide-react";
 import { Plus, Trash2, AlertTriangle, CheckCircle, Target } from "lucide-react";
-import { CATEGORIES, getCategoryById } from "../utils/categories";
+import { getCategories, getCategoryById } from "../utils/categories";
 import { formatCurrency, getThisMonthExpenses, getTotalByCategory } from "../utils/helpers";
 import { format } from "date-fns";
+import AddCategoryTile from "../components/AddCategoryTile";
 
-function AddBudgetModal({ onAdd, onClose, existing }) {
+function AddBudgetModal({ onAdd, onClose, existing, onAddCategory }) {
   const [form, setForm] = useState({ category: "food", limit: "", period: "monthly", description: "" });
   const [error, setError] = useState("");
   const existingIds = existing.map((b) => b.category);
@@ -27,7 +28,7 @@ function AddBudgetModal({ onAdd, onClose, existing }) {
           <div>
             <label className="text-xs font-display font-semibold text-white/50 uppercase tracking-wider mb-2 block">Category</label>
             <div className="grid grid-cols-3 gap-2 max-h-48 overflow-y-auto pr-1">
-              {CATEGORIES.map((cat) => {
+              {getCategories().map((cat) => {
                 const Icon = Icons[cat.icon] || Icons.Package;
                 const hasExisting = existingIds.includes(cat.id) && form.category !== cat.id;
                 return (
@@ -41,6 +42,10 @@ function AddBudgetModal({ onAdd, onClose, existing }) {
                   </button>
                 );
               })}
+              <AddCategoryTile onAdd={async (label) => {
+                const newCat = await onAddCategory(label);
+                if (newCat) setForm((f) => ({ ...f, category: newCat.id }));
+              }} />
             </div>
           </div>
           <div>
@@ -72,7 +77,7 @@ function AddBudgetModal({ onAdd, onClose, existing }) {
   );
 }
 
-export default function BudgetPage({ budgets, addBudget, deleteBudget, expenses }) {
+export default function BudgetPage({ budgets, addBudget, deleteBudget, expenses, onAddCategory }) {
   const [showModal, setShowModal] = useState(false);
   const thisMonth = getThisMonthExpenses(expenses);
   const spentByCategory = getTotalByCategory(thisMonth);
@@ -156,7 +161,7 @@ export default function BudgetPage({ budgets, addBudget, deleteBudget, expenses 
       )}
 
     </div>
-    {showModal && <AddBudgetModal onAdd={addBudget} onClose={() => setShowModal(false)} existing={budgets} />}
+    {showModal && <AddBudgetModal onAdd={addBudget} onClose={() => setShowModal(false)} existing={budgets} onAddCategory={(label) => onAddCategory("expense", label)} />}
     </>
   );
 }

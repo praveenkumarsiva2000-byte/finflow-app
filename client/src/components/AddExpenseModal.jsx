@@ -1,8 +1,9 @@
 import { useState } from "react";
 import * as Icons from "lucide-react";
 import { X, Plus, IndianRupee, RefreshCw, Trash2, Copy, ChevronDown, ChevronUp, CheckCircle2 } from "lucide-react";
-import { CATEGORIES } from "../utils/categories";
+import { getCategories } from "../utils/categories";
 import { format } from "date-fns";
+import AddCategoryTile from "./AddCategoryTile";
 
 const today = format(new Date(), "yyyy-MM-dd");
 const FREQUENCIES = [
@@ -14,10 +15,11 @@ const FREQUENCIES = [
 
 const newEntry = () => ({ id: Date.now() + Math.random(), amount: "", category: "food", date: today, note: "", isRecurring: false, frequency: "monthly" });
 
-function EntryRow({ entry, idx, total, onChange, onRemove, onDuplicate }) {
+function EntryRow({ entry, idx, total, onChange, onRemove, onDuplicate, onAddCategory }) {
   const [open, setOpen] = useState(idx === 0);
 
-  const cat = CATEGORIES.find((c) => c.id === entry.category) || CATEGORIES[0];
+  const categories = getCategories();
+  const cat = categories.find((c) => c.id === entry.category) || categories[0];
   const CatIcon = Icons[cat.icon] || Icons.Package;
 
   return (
@@ -82,7 +84,7 @@ function EntryRow({ entry, idx, total, onChange, onRemove, onDuplicate }) {
           <div>
             <label className="text-[10px] font-display font-semibold text-white/40 uppercase tracking-wider mb-1.5 block">Category</label>
             <div className="grid grid-cols-5 gap-1.5">
-              {CATEGORIES.map((c) => {
+              {categories.map((c) => {
                 const Icon = Icons[c.icon] || Icons.Package;
                 return (
                   <button
@@ -96,6 +98,10 @@ function EntryRow({ entry, idx, total, onChange, onRemove, onDuplicate }) {
                   </button>
                 );
               })}
+              <AddCategoryTile onAdd={async (label) => {
+                const newCat = await onAddCategory(label);
+                if (newCat) onChange({ category: newCat.id });
+              }} />
             </div>
           </div>
 
@@ -161,7 +167,7 @@ function EntryRow({ entry, idx, total, onChange, onRemove, onDuplicate }) {
   );
 }
 
-export default function AddExpenseModal({ onAdd, onClose }) {
+export default function AddExpenseModal({ onAdd, onClose, onAddCategory }) {
   const [entries, setEntries] = useState([newEntry()]);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
@@ -233,6 +239,7 @@ export default function AddExpenseModal({ onAdd, onClose }) {
               onChange={(changes) => update(entry.id, changes)}
               onRemove={() => removeRow(entry.id)}
               onDuplicate={() => duplicateRow(entry.id)}
+              onAddCategory={onAddCategory}
             />
           ))}
 
