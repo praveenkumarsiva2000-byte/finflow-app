@@ -59,6 +59,12 @@ module.exports = {
        <p style="font-size:32px;font-weight:bold;letter-spacing:6px;color:#0d87f0;">${code}</p>
        <p>If you didn't request this, you can safely ignore this email.</p>`
     ),
+    loginOtp: (code) => wrap(
+      "Your sign-in code",
+      `<p>Use the code below to finish signing in to Cashlyne. It expires in 10 minutes.</p>
+       <p style="font-size:32px;font-weight:bold;letter-spacing:6px;color:#0d87f0;">${code}</p>
+       <p>If you didn't try to sign in, secure your account by changing your password.</p>`
+    ),
     budgetAlert: ({ category, spent, limit, pct, over }) => wrap(
       over ? `You're over budget on ${category}` : `You're approaching your ${category} budget`,
       `<p>Spent <strong>${spent}</strong> of <strong>${limit}</strong> (${pct.toFixed(0)}%) this period.</p>`

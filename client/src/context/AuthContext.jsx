@@ -23,6 +23,21 @@ export function AuthProvider({ children }) {
   const login = useCallback(async ({ email, password }) => {
     try {
       const data = await api.login({ email, password });
+      if (data.mfaRequired) {
+        return { success: true, mfaRequired: true, email: data.email };
+      }
+      localStorage.setItem("cashlyne_token", data.token);
+      localStorage.setItem("cashlyne_user", JSON.stringify(data.user));
+      setCurrentUser(data.user);
+      return { success: true };
+    } catch (err) {
+      return { success: false, error: err.message };
+    }
+  }, []);
+
+  const verifyLoginOtp = useCallback(async ({ email, otp }) => {
+    try {
+      const data = await api.verifyLoginOtp({ email, otp });
       localStorage.setItem("cashlyne_token", data.token);
       localStorage.setItem("cashlyne_user", JSON.stringify(data.user));
       setCurrentUser(data.user);
@@ -66,7 +81,7 @@ export function AuthProvider({ children }) {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ currentUser, login, signup, logout, requestPasswordReset, verifyResetOtp, confirmPasswordReset }}>
+    <AuthContext.Provider value={{ currentUser, login, verifyLoginOtp, signup, logout, requestPasswordReset, verifyResetOtp, confirmPasswordReset }}>
       {children}
     </AuthContext.Provider>
   );

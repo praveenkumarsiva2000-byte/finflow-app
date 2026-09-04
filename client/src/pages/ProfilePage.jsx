@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { User, Bell, Shield, Download, Trash2, ChevronRight, Edit3, Check, RefreshCw, Coins, Tag } from "lucide-react";
+import { User, Bell, Shield, Download, Trash2, ChevronRight, Edit3, Check, RefreshCw, Coins, Tag, ShieldCheck } from "lucide-react";
 import { exportToCSV, formatCurrency, CURRENCIES } from "../utils/helpers";
 
 export default function ProfilePage({ profile, updateProfile, expenses, incomes, clearAll, deleteCustomCategory }) {
@@ -36,6 +36,13 @@ export default function ProfilePage({ profile, updateProfile, expenses, incomes,
 
   const setCurrencyPref = (code) => {
     const prefs = { ...(profile && profile.preferences ? profile.preferences : {}), currency: code };
+    updateProfile({ preferences: prefs });
+  };
+
+  const mfaEnabled = Boolean(profile?.preferences?.security?.mfaEnabled);
+  const toggleMfa = () => {
+    const currentSecurity = profile?.preferences?.security || {};
+    const prefs = { ...(profile?.preferences || {}), security: { ...currentSecurity, mfaEnabled: !mfaEnabled } };
     updateProfile({ preferences: prefs });
   };
 
@@ -108,6 +115,27 @@ export default function ProfilePage({ profile, updateProfile, expenses, incomes,
             <option key={code} value={code}>{label}</option>
           ))}
         </select>
+      </div>
+
+      {/* Security */}
+      <div className="glass-card p-5 space-y-4">
+        <h3 className="font-display font-bold text-white flex items-center gap-2"><ShieldCheck size={16} className="text-emerald-400" />Security</h3>
+        <div className="flex items-center justify-between py-1">
+          <div>
+            <p className="text-sm font-semibold text-white/80">Two-Factor Authentication</p>
+            <p className="text-xs text-white/35 font-body mt-0.5">Require a 6-digit email code every time you sign in</p>
+          </div>
+          <button onClick={toggleMfa}
+            className={`w-11 h-6 rounded-full transition-all duration-200 relative shrink-0 ${mfaEnabled ? "bg-emerald-500" : "bg-navy-border"}`}>
+            <span className={`absolute top-1 w-4 h-4 bg-white rounded-full shadow transition-all duration-200 ${mfaEnabled ? "left-6" : "left-1"}`} />
+          </button>
+        </div>
+        {mfaEnabled && (
+          <div className="flex items-center gap-2 p-2.5 rounded-lg bg-emerald-500/10 border border-emerald-500/20 animate-fade-in">
+            <ShieldCheck size={13} className="text-emerald-400 shrink-0" />
+            <p className="text-xs text-emerald-400 font-body">2FA is on — a code will be emailed to you on every sign-in</p>
+          </div>
+        )}
       </div>
 
       {/* Notifications */}

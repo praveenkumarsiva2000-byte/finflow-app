@@ -68,10 +68,68 @@ router.post(
       const isMatch = await user.comparePassword(password);
       if (!isMatch) return res.status(401).json({ error: "Invalid email or password." });
 
+      if (user.preferences?.security?.mfaEnabled) {
+        const otp = generateOtp();
+        user.loginOtpHash = await bcrypt.hash(otp, 10);
+        user.loginOtpExpires = new Date(Date.now() + OTP_EXPIRY_MS);
+        user.loginOtpAttempts = 0;
+        await user.save();
+
+        await sendMail({ to: user.email, subject: "Your Cashlyne sign-in code", html: templates.loginOtp(otp) });
+        return res.json({ mfaRequired: true, email: user.email });
+      }
+
       const token = signToken(user._id);
       res.json({ token, user: user.toJSON() });
     } catch (err) {
       res.status(500).json({ error: "Server error during login." });
+    }
+  }
+);
+
+// ── POST /api/auth/verify-login-otp ───────────────────────────────────────
+// Second step of sign-in when the account has email MFA enabled.
+router.post(
+  "/verify-login-otp",
+  resetLimiter,
+  [
+    body("email").isEmail().withMessage("Valid email required").normalizeEmail(),
+    body("otp").isLength({ min: 6, max: 6 }).withMessage("Enter the 6-digit code"),
+  ],
+  async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) return res.status(400).json({ error: errors.array()[0].msg });
+
+    try {
+      const { email, otp } = req.body;
+      const user = await User.findOne({ email }).select("+loginOtpHash +loginOtpExpires +loginOtpAttempts");
+      if (!user || !user.loginOtpHash || !user.loginOtpExpires) {
+        return res.status(400).json({ error: "Invalid or expired code." });
+      }
+      if (user.loginOtpExpires < new Date()) {
+        return res.status(400).json({ error: "Code expired. Please sign in again." });
+      }
+      if (user.loginOtpAttempts >= MAX_OTP_ATTEMPTS) {
+        return res.status(429).json({ error: "Too many incorrect attempts. Please sign in again." });
+      }
+
+      const isMatch = await bcrypt.compare(otp, user.loginOtpHash);
+      if (!isMatch) {
+        user.loginOtpAttempts += 1;
+        await user.save();
+        return res.status(400).json({ error: "Incorrect code." });
+      }
+
+      // Single-use: clear the OTP once verified.
+      user.loginOtpHash = undefined;
+      user.loginOtpExpires = undefined;
+      user.loginOtpAttempts = 0;
+      await user.save();
+
+      const token = signToken(user._id);
+      res.json({ token, user: user.toJSON() });
+    } catch (err) {
+      res.status(500).json({ error: "Server error during code verification." });
     }
   }
 );

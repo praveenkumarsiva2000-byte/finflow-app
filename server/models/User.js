@@ -24,10 +24,16 @@ const userSchema = new mongoose.Schema(
         expense: { type: [{ id: String, label: String }], default: [] },
         income: { type: [{ id: String, label: String }], default: [] },
       },
+      security: {
+        mfaEnabled: { type: Boolean, default: false },
+      },
     },
     resetOtpHash: { type: String, select: false },
     resetOtpExpires: { type: Date, select: false },
     resetOtpAttempts: { type: Number, default: 0, select: false },
+    loginOtpHash: { type: String, select: false },
+    loginOtpExpires: { type: Date, select: false },
+    loginOtpAttempts: { type: Number, default: 0, select: false },
   },
   { timestamps: true }
 );

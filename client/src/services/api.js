@@ -22,6 +22,7 @@ export const api = {
   // ── Auth ────────────────────────────────────────────────────────────────
   signup: (data) => req("POST", "/auth/signup", data),
   login: (data) => req("POST", "/auth/login", data),
+  verifyLoginOtp: (data) => req("POST", "/auth/verify-login-otp", data),
   forgotPassword: (email) => req("POST", "/auth/forgot-password", { email }),
   verifyOtp: (data) => req("POST", "/auth/verify-otp", data),
   resetPassword: (data) => req("POST", "/auth/reset-password", data),
