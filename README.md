@@ -41,10 +41,10 @@ npm run seed
 ```
 
 Then log in with:
-| Field    | Value              |
-|----------|--------------------|
-| Email    | `demo@cashlyne.app` |
-| Password | `Demo@1234`        |
+| Field    | Value               |
+|----------|---------------------|
+| Email    | `guest@cashlyne.app` |
+| Password | `Guest@2026`         |
 
 ---
 
